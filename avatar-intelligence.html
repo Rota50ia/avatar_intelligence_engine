@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avatar Intelligence Engine</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f0f0f;
+      color: #e8e8e8;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    header .badge {
+      display: inline-block;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      color: #888;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+
+    header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: #555;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* FORM */
+    .form-card {
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 16px;
+      padding: 36px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #aaa;
+      margin-bottom: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    label span.req {
+      color: #e05050;
+      margin-left: 2px;
+    }
+
+    label span.opt {
+      color: #444;
+      font-weight: 400;
+      font-size: 11px;
+      margin-left: 6px;
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      background: #0f0f0f;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      color: #e8e8e8;
+      font-size: 14px;
+      font-family: inherit;
+      padding: 12px 16px;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    input[type="text"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #444;
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+    }
+
+    select option { background: #1a1a1a; }
+
+    textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+    .radio-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #aaa;
+      font-weight: 400;
+      margin: 0;
+      padding: 10px 20px;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .radio-group input[type="radio"] { accent-color: #e8e8e8; }
+
+    .radio-group label:has(input:checked) {
+      border-color: #444;
+      color: #fff;
+      background: #1a1a1a;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #1e1e1e;
+      margin: 28px 0;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: -0.2px;
+    }
+
+    .btn-submit:hover { background: #e8e8e8; }
+    .btn-submit:active { background: #d0d0d0; }
+
+    /* LOADING */
+    #loading {
+      display: none;
+      text-align: center;
+      padding: 80px 40px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 2px solid #222;
+      border-top-color: #666;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 24px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-steps {
+      list-style: none;
+      text-align: left;
+      display: inline-block;
+      margin-top: 16px;
+    }
+
+    .loading-steps li {
+      font-size: 13px;
+      color: #444;
+      padding: 4px 0;
+      transition: color 0.4s;
+    }
+
+    .loading-steps li.active { color: #aaa; }
+    .loading-steps li.done { color: #666; }
+    .loading-steps li::before { content: '○ '; }
+    .loading-steps li.active::before { content: '◉ '; color: #888; }
+    .loading-steps li.done::before { content: '● '; color: #555; }
+
+    /* RESULT */
+    #result { display: none; }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+
+    .result-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .result-header p { font-size: 13px; color: #555; margin-top: 2px; }
+
+    .btn-notion {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      color: #aaa;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-notion:hover { border-color: #444; color: #fff; }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 540px) { .card-grid { grid-template-columns: 1fr; } }
+
+    .result-card {
+      background: #141414;
+      border: 1px solid #1e1e1e;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .result-card.full { grid-column: 1 / -1; }
+
+    .result-card .card-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #444;
+      margin-bottom: 10px;
+    }
+
+    .result-card .card-value {
+      font-size: 14px;
+      color: #ccc;
+      line-height: 1.6;
+    }
+
+    .pain-levels { display: flex; flex-direction: column; gap: 12px; }
+
+    .pain-item { }
+
+    .pain-item .pain-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .pain-item.superficial .pain-label { color: #664444; }
+    .pain-item.real .pain-label { color: #664422; }
+    .pain-item.profunda .pain-label { color: #883333; }
+
+    .pain-item .pain-text {
+      font-size: 13px;
+      color: #bbb;
+      line-height: 1.5;
+    }
+
+    .badge-nivel {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .nivel-1 { background: #1a1a1a; color: #666; border: 1px solid #2a2a2a; }
+    .nivel-2 { background: #1a1a0a; color: #887733; border: 1px solid #333300; }
+    .nivel-3 { background: #0a1a0a; color: #448844; border: 1px solid #003300; }
+    .nivel-4 { background: #0a0a1a; color: #4466aa; border: 1px solid #001144; }
+    .nivel-5 { background: #1a0a0a; color: #aa4444; border: 1px solid #440000; }
+
+    .framework-badge {
+      display: inline-block;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      color: #aaa;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .angulos { display: flex; flex-direction: column; gap: 16px; }
+
+    .angulo-item {
+      padding: 16px;
+      background: #0f0f0f;
+      border: 1px solid #1e1e1e;
+      border-radius: 8px;
+    }
+
+    .angulo-item .angulo-framework {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    .angulo-item .angulo-texto {
+      font-size: 14px;
+      color: #ccc;
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    .avatar-card-text {
+      font-size: 14px;
+      color: #bbb;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .btn-reset {
+      flex: 1;
+      background: transparent;
+      border: 1px solid #2a2a2a;
+      color: #666;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .btn-reset:hover { border-color: #444; color: #aaa; }
+
+    .error-msg {
+      background: #1a0a0a;
+      border: 1px solid #440000;
+      border-radius: 10px;
+      padding: 16px 20px;
+      color: #cc5555;
+      font-size: 13px;
+      margin-top: 16px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <div class="badge">O Parasita • 5 Camadas</div>
+      <h1>Avatar Intelligence Engine</h1>
+      <p>Mapeamento profundo de avatar usando a metodologia do interrogatório Parasita.<br>Diagnóstico de nível de consciência + framework + 3 ângulos prontos.</p>
+    </header>
+
+    <!-- FORMULÁRIO -->
+    <div id="form-section">
+      <div class="form-card">
+        <div class="form-group">
+          <label>Nome do cliente <span class="req">*</span></label>
+          <input type="text" id="nome_cliente" placeholder="Ex: João Silva" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label>Produto / serviço <span class="req">*</span></label>
+          <input type="text" id="produto" placeholder="Ex: Curso de Cajón para iniciantes">
+        </div>
+
+        <div class="form-group">
+          <label>Nicho <span class="req">*</span></label>
+          <select id="nicho">
+            <option value="" disabled selected>Selecione o nicho</option>
+            <option value="infoprodutos">Infoprodutos / Cursos online</option>
+            <option value="fitness">Saúde / Fitness / Emagrecimento</option>
+            <option value="vendas">Vendas / Negócios</option>
+            <option value="finanças">Finanças / Investimentos</option>
+            <option value="relacionamentos">Relacionamentos / Desenvolvimento pessoal</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>O que o produto entrega <span class="req">*</span><span class="opt">— resultado mensurável</span></label>
+          <textarea id="o_que_entrega" placeholder="Ex: O aluno aprende a tocar cajón do zero até tocar músicas completas em 30 dias"></textarea>
+        </div>
+
+        <hr class="divider">
+
+        <div class="form-group">
+          <label>Hipótese de avatar <span class="opt">— opcional</span></label>
+          <textarea id="hipotese_avatar" placeholder="Se já tem alguma ideia de quem é o avatar, descreva aqui"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Já tem clientes?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="tem_clientes" value="sim"> Sim</label>
+            <label><input type="radio" name="tem_clientes" value="não" checked> Não</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Contexto adicional <span class="opt">— opcional</span></label>
+          <textarea id="contexto_adicional" placeholder="Qualquer informação relevante sobre o produto, mercado ou avatar"></textarea>
+        </div>
+
+        <div id="error-msg" class="error-msg"></div>
+
+        <button class="btn-submit" onclick="mapearAvatar()">
+          Mapear Avatar →
+        </button>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div id="loading">
+      <div class="spinner"></div>
+      <p style="color: #555; font-size: 13px; margin-bottom: 4px;">Executando interrogatório...</p>
+      <p style="color: #333; font-size: 12px;">Isso pode levar 20-40 segundos</p>
+      <ul class="loading-steps" id="loading-steps">
+        <li id="step-1">Camada 1 — Realidade Demográfica</li>
+        <li id="step-2">Camada 2 — Mapa de Dor</li>
+        <li id="step-3">Camada 3 — Mapa de Desejo</li>
+        <li id="step-4">Camada 4 — Histórico de Tentativas</li>
+        <li id="step-5">Camada 5 — Nível de Consciência</li>
+        <li id="step-6">Gerando ângulos de copy...</li>
+        <li id="step-7">Salvando no Notion...</li>
+      </ul>
+    </div>
+
+    <!-- RESULTADO -->
+    <div id="result">
+      <div class="result-header">
+        <div>
+          <h2>Avatar Mapeado</h2>
+          <p id="result-subtitle"></p>
+        </div>
+        <a href="#" id="btn-notion" class="btn-notion" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 5h4M5 7.5h4M5 10h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Ver no Notion
+        </a>
+      </div>
+
+      <!-- Dor -->
+      <div class="card-grid">
+        <div class="result-card full">
+          <div class="card-label">Mapa de Dor</div>
+          <div class="pain-levels" id="pain-levels"></div>
+        </div>
+      </div>
+
+      <!-- Desejo -->
+      <div class="card-grid">
+        <div class="result-card">
+          <div class="card-label">Desejo Declarado</div>
+          <div class="card-value" id="desejo-declarado"></div>
+        </div>
+        <div class="result-card">
+          <div class="card-label">Desejo Real</div>
+          <div class="card-value" id="desejo-real"></div>
+        </div>
+        <div class="result-card full">
+          <div class="card-label">Desejo Secreto</div>
+          <div class="card-value" id="desejo-secreto"></div>
+        </div>
+      </div>
+
+      <!-- Nível + Framework -->
+      <div class="card-grid">
+        <div class="result-card">
+          <div class="card-label">Nível de Consciência</div>
+          <div id="nivel-badge" style="margin-bottom: 10px;"></div>
+          <div class="card-value" id="nivel-justificativa" style="font-size: 13px; color: #666;"></div>
+        </div>
+        <div class="result-card">
+          <div class="card-label">Framework Recomendado</div>
+          <div class="framework-badge" id="framework-badge"></div>
+          <div class="card-value" id="framework-justificativa" style="font-size: 13px; color: #666;"></div>
+        </div>
+      </div>
+
+      <!-- Histórico -->
+      <div class="card-grid">
+        <div class="result-card">
+          <div class="card-label">Objeção Principal</div>
+          <div class="card-value" id="objecao"></div>
+        </div>
+        <div class="result-card">
+          <div class="card-label">Condição de Crença</div>
+          <div class="card-value" id="crenca"></div>
+        </div>
+      </div>
+
+      <!-- Ângulos -->
+      <div class="result-card" style="margin-bottom: 16px;">
+        <div class="card-label">3 Ângulos de Copy</div>
+        <div class="angulos" id="angulos"></div>
+      </div>
+
+      <!-- Avatar Card -->
+      <div class="result-card" style="margin-bottom: 16px;">
+        <div class="card-label">Avatar Card Completo</div>
+        <div class="avatar-card-text" id="avatar-card"></div>
+      </div>
+
+      <div class="result-actions">
+        <button class="btn-reset" onclick="resetForm()">← Mapear outro avatar</button>
+        <a href="#" id="btn-notion-bottom" class="btn-notion" target="_blank" style="flex: 1; justify-content: center; text-decoration: none; display: flex; align-items: center;">
+          Abrir no Notion ↗
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const WEBHOOK_URL = 'https://edilson-dark-n8n.7lvlou.easypanel.host/webhook/avatar-intelligence';
+
+    const steps = [
+      { id: 'step-1', delay: 2000 },
+      { id: 'step-2', delay: 5000 },
+      { id: 'step-3', delay: 9000 },
+      { id: 'step-4', delay: 14000 },
+      { id: 'step-5', delay: 19000 },
+      { id: 'step-6', delay: 24000 },
+      { id: 'step-7', delay: 28000 },
+    ];
+
+    let stepTimers = [];
+
+    function startLoadingSteps() {
+      steps.forEach((s, i) => {
+        const prev = i > 0 ? steps[i - 1] : null;
+        if (prev) {
+          const t1 = setTimeout(() => {
+            document.getElementById(prev.id).className = 'done';
+          }, s.delay - 400);
+          stepTimers.push(t1);
+        }
+        const t2 = setTimeout(() => {
+          document.getElementById(s.id).className = 'active';
+        }, s.delay);
+        stepTimers.push(t2);
+      });
+    }
+
+    function clearLoadingSteps() {
+      stepTimers.forEach(t => clearTimeout(t));
+      stepTimers = [];
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('error-msg');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    function hideError() {
+      document.getElementById('error-msg').style.display = 'none';
+    }
+
+    async function mapearAvatar() {
+      hideError();
+
+      const nome_cliente = document.getElementById('nome_cliente').value.trim();
+      const produto = document.getElementById('produto').value.trim();
+      const nicho = document.getElementById('nicho').value;
+      const o_que_entrega = document.getElementById('o_que_entrega').value.trim();
+
+      if (!nome_cliente || !produto || !nicho || !o_que_entrega) {
+        showError('Preencha os campos obrigatórios: Nome do cliente, Produto, Nicho e O que entrega.');
+        return;
+      }
+
+      const tem_clientes = document.querySelector('input[name="tem_clientes"]:checked')?.value || 'não';
+      const hipotese_avatar = document.getElementById('hipotese_avatar').value.trim();
+      const contexto_adicional = document.getElementById('contexto_adicional').value.trim();
+
+      // Mostrar loading
+      document.getElementById('form-section').style.display = 'none';
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('result').style.display = 'none';
+
+      // Reset steps
+      steps.forEach(s => { document.getElementById(s.id).className = ''; });
+      document.getElementById('step-1').className = 'active';
+      startLoadingSteps();
+
+      try {
+        const response = await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            nome_cliente, produto, nicho, o_que_entrega,
+            hipotese_avatar, tem_clientes, contexto_adicional
+          })
+        });
+
+        clearLoadingSteps();
+
+        if (!response.ok) {
+          throw new Error('Erro na requisição: ' + response.status);
+        }
+
+        const data = await response.json();
+
+        if (!data.success) {
+          throw new Error(data.error || 'Erro desconhecido no processamento.');
+        }
+
+        renderResult(data);
+
+      } catch (err) {
+        clearLoadingSteps();
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('form-section').style.display = 'block';
+        showError('Erro: ' + err.message + '. Tente novamente.');
+      }
+    }
+
+    function nivelClass(n) {
+      return 'nivel-' + (n >= 1 && n <= 5 ? n : 2);
+    }
+
+    function renderResult(data) {
+      const a = data.avatar || {};
+      const notionUrl = data.notion_url || '#';
+
+      // Subtitle
+      document.getElementById('result-subtitle').textContent =
+        (a.cliente || '') + (a.produto ? ' — ' + a.produto : '');
+
+      // Notion links
+      document.getElementById('btn-notion').href = notionUrl;
+      document.getElementById('btn-notion-bottom').href = notionUrl;
+
+      // Dor
+      document.getElementById('pain-levels').innerHTML = `
+        <div class="pain-item superficial">
+          <div class="pain-label">Superficial</div>
+          <div class="pain-text">${esc(a.dor_superficial)}</div>
+        </div>
+        <div class="pain-item real">
+          <div class="pain-label">Real</div>
+          <div class="pain-text">${esc(a.dor_real)}</div>
+        </div>
+        <div class="pain-item profunda">
+          <div class="pain-label">Profunda</div>
+          <div class="pain-text">${esc(a.dor_profunda)}</div>
+        </div>
+      `;
+
+      // Desejo
+      document.getElementById('desejo-declarado').textContent = a.desejo_declarado || '';
+      document.getElementById('desejo-real').textContent = a.desejo_real || '';
+      document.getElementById('desejo-secreto').textContent = a.desejo_secreto || '';
+
+      // Nível
+      const n = parseInt(a.nivel_consciencia) || 2;
+      document.getElementById('nivel-badge').innerHTML =
+        `<span class="badge-nivel ${nivelClass(n)}">${a.nome_nivel || n + '-Problem Aware'}</span>`;
+      document.getElementById('nivel-justificativa').textContent = a.justificativa_nivel || '';
+
+      // Framework
+      document.getElementById('framework-badge').textContent = a.framework_recomendado || '';
+      document.getElementById('framework-justificativa').textContent = a.justificativa_framework || '';
+
+      // Objeção + Crença
+      document.getElementById('objecao').textContent = a.objecao_principal || '';
+      document.getElementById('crenca').textContent = a.condicao_de_crenca || '';
+
+      // Ângulos
+      const angulos = [
+        { nome: a.angulo_1_nome, texto: a.angulo_1_texto },
+        { nome: a.angulo_2_nome, texto: a.angulo_2_texto },
+        { nome: a.angulo_3_nome, texto: a.angulo_3_texto },
+      ].filter(ang => ang.nome || ang.texto);
+
+      document.getElementById('angulos').innerHTML = angulos.map(ang => `
+        <div class="angulo-item">
+          <div class="angulo-framework">${esc(ang.nome || '')}</div>
+          <div class="angulo-texto">${esc(ang.texto || '')}</div>
+        </div>
+      `).join('');
+
+      // Avatar Card
+      document.getElementById('avatar-card').textContent = a.avatar_card_completo || '';
+
+      // Mostrar resultado
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('result').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function esc(str) {
+      return (str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function resetForm() {
+      document.getElementById('result').style.display = 'none';
+      document.getElementById('form-section').style.display = 'block';
+      steps.forEach(s => { document.getElementById(s.id).className = ''; });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
