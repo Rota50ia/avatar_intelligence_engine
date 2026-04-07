@@ -4,15 +4,65 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Avatar Intelligence Engine</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* ============================================
+       SUZANO EXPRESS — Design Tokens
+    ============================================ */
+    :root {
+      --azul:    #0A1628;
+      --ciano:   #00E8D4;
+      --white:   #FFFFFF;
+      --gray:    #8A8A8A;
+      --black:   #0A0A05;
+      --dark-bg: #080E18;
+      --card-bg: #0F1828;
+
+      --ciano-muted:  rgba(0, 232, 212, 0.10);
+      --ciano-border: rgba(0, 232, 212, 0.22);
+      --ciano-glow:   rgba(0, 232, 212, 0.18);
+
+      --text-primary:   #FFFFFF;
+      --text-secondary: #8090A8;
+      --text-muted:     #2a3a52;
+      --text-accent:    #00E8D4;
+
+      --border:        rgba(255,255,255,0.06);
+      --border-strong: rgba(255,255,255,0.12);
+
+      --color-success: #22c55e;
+      --color-error:   #ef4444;
+      --color-warning: #FBBF24;
+
+      --font-display: 'Oswald', 'Arial Black', Helvetica, sans-serif;
+      --font-body:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+      --shadow-md:   0 4px 16px rgba(0,0,0,0.5);
+      --shadow-lg:   0 8px 40px rgba(0,0,0,0.6);
+      --shadow-glow: 0 0 20px rgba(0,232,212,0.18);
+      --shadow-glow-strong: 0 0 40px rgba(0,232,212,0.28);
+
+      --radius-sm:   4px;
+      --radius-md:   8px;
+      --radius-lg:   12px;
+      --radius-xl:   16px;
+      --radius-full: 9999px;
+
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ============================================
+       BASE
+    ============================================ */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0f0f0f;
-      color: #e8e8e8;
+      font-family: var(--font-body);
+      background: var(--dark-bg);
+      color: var(--text-primary);
       min-height: 100vh;
-      padding: 40px 20px;
+      padding: 56px 20px 96px;
+      -webkit-font-smoothing: antialiased;
     }
 
     .container {
@@ -20,402 +70,568 @@
       margin: 0 auto;
     }
 
-    header {
+    /* ============================================
+       HEADER
+    ============================================ */
+    .page-header {
       text-align: center;
-      margin-bottom: 48px;
+      margin-bottom: 52px;
     }
 
-    header .badge {
-      display: inline-block;
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      color: #888;
-      font-size: 11px;
+    .badge-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--ciano-muted);
+      border: 1px solid var(--ciano-border);
+      color: var(--ciano);
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      margin-bottom: 20px;
+    }
+
+    .badge-eyebrow::before {
+      content: '';
+      display: block;
+      width: 5px;
+      height: 5px;
+      background: var(--ciano);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--ciano);
+      flex-shrink: 0;
+    }
+
+    .page-header h1 {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      line-height: 1.1;
+    }
+
+    .page-header h1 span { color: var(--ciano); }
+
+    .page-header p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.8;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ============================================
+       INPUTS
+    ============================================ */
+    .label-field {
+      display: block;
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
-      padding: 4px 12px;
-      border-radius: 20px;
-      margin-bottom: 16px;
-    }
-
-    header h1 {
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      color: #fff;
+      color: var(--text-secondary);
       margin-bottom: 8px;
     }
 
-    header p {
-      color: #555;
-      font-size: 14px;
-      line-height: 1.6;
-    }
+    .label-field .req { color: var(--color-error); margin-left: 2px; }
 
-    /* FORM */
-    .form-card {
-      background: #141414;
-      border: 1px solid #222;
-      border-radius: 16px;
-      padding: 36px;
-    }
-
-    .form-group {
-      margin-bottom: 24px;
-    }
-
-    label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: #aaa;
-      margin-bottom: 8px;
-      letter-spacing: 0.3px;
-    }
-
-    label span.req {
-      color: #e05050;
-      margin-left: 2px;
-    }
-
-    label span.opt {
-      color: #444;
+    .label-field .opt {
+      font-size: 10px;
       font-weight: 400;
-      font-size: 11px;
-      margin-left: 6px;
+      letter-spacing: 0.3px;
+      text-transform: none;
+      color: var(--text-muted);
+      margin-left: 8px;
     }
 
     input[type="text"],
     select,
     textarea {
       width: 100%;
-      background: #0f0f0f;
-      border: 1px solid #2a2a2a;
-      border-radius: 10px;
-      color: #e8e8e8;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
       font-size: 14px;
-      font-family: inherit;
-      padding: 12px 16px;
-      transition: border-color 0.2s;
+      font-weight: 400;
+      font-family: var(--font-body);
+      padding: 13px 16px;
       outline: none;
+      transition: border-color 200ms var(--ease), box-shadow 200ms var(--ease);
     }
 
     input[type="text"]:focus,
     select:focus,
     textarea:focus {
-      border-color: #444;
+      border-color: var(--ciano-border);
+      box-shadow: 0 0 0 3px var(--ciano-muted);
     }
+
+    input[type="text"]::placeholder,
+    textarea::placeholder { color: var(--text-muted); }
 
     select {
       cursor: pointer;
       appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232a3a52' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 14px center;
+      background-position: right 16px center;
     }
 
-    select option { background: #1a1a1a; }
+    select option { background: #0F1828; color: var(--text-primary); }
 
-    textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+    textarea { resize: vertical; min-height: 88px; line-height: 1.7; }
 
-    .radio-group {
-      display: flex;
-      gap: 12px;
-    }
+    /* ============================================
+       RADIO
+    ============================================ */
+    .radio-group { display: flex; gap: 10px; }
 
-    .radio-group label {
+    .radio-option {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
+      flex: 1;
       cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      padding: 11px 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: all 200ms var(--ease);
+    }
+
+    .radio-option input[type="radio"] { accent-color: var(--ciano); width: 14px; height: 14px; }
+
+    .radio-option:has(input:checked) {
+      border-color: var(--ciano-border);
+      color: var(--ciano);
+      background: var(--ciano-muted);
+    }
+
+    /* ============================================
+       BUTTONS
+    ============================================ */
+    .btn-primary {
+      width: 100%;
+      background: var(--ciano);
+      color: var(--black);
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-display);
       font-size: 14px;
-      color: #aaa;
-      font-weight: 400;
-      margin: 0;
-      padding: 10px 20px;
-      border: 1px solid #2a2a2a;
-      border-radius: 8px;
-      transition: all 0.2s;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 17px;
+      cursor: pointer;
+      transition: background 200ms var(--ease), box-shadow 200ms var(--ease), transform 200ms var(--ease);
+      box-shadow: var(--shadow-glow);
     }
 
-    .radio-group input[type="radio"] { accent-color: #e8e8e8; }
-
-    .radio-group label:has(input:checked) {
-      border-color: #444;
-      color: #fff;
-      background: #1a1a1a;
+    .btn-primary:hover {
+      background: #1ffde8;
+      box-shadow: var(--shadow-glow-strong);
+      transform: translateY(-1px);
     }
+
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      border-radius: var(--radius-md);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 14px 20px;
+      cursor: pointer;
+      transition: border-color 200ms var(--ease), color 200ms var(--ease);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+    }
+
+    .btn-accent-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--ciano-muted);
+      border: 1px solid var(--ciano-border);
+      color: var(--ciano);
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background 200ms var(--ease), color 200ms var(--ease), box-shadow 200ms var(--ease);
+    }
+
+    .btn-accent-outline:hover {
+      background: var(--ciano);
+      color: var(--black);
+      box-shadow: var(--shadow-glow);
+    }
+
+    /* ============================================
+       FORM CARD
+    ============================================ */
+    .form-group { margin-bottom: 24px; }
 
     .divider {
       border: none;
-      border-top: 1px solid #1e1e1e;
-      margin: 28px 0;
+      border-top: 1px solid var(--border);
+      margin: 32px 0;
     }
 
-    .btn-submit {
-      width: 100%;
-      background: #fff;
-      color: #000;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 700;
-      padding: 16px;
-      cursor: pointer;
-      transition: all 0.2s;
-      letter-spacing: -0.2px;
+    .form-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      box-shadow: var(--shadow-lg);
     }
 
-    .btn-submit:hover { background: #e8e8e8; }
-    .btn-submit:active { background: #d0d0d0; }
+    .error-msg {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: var(--radius-md);
+      padding: 13px 16px;
+      color: var(--color-error);
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 16px;
+      display: none;
+    }
 
-    /* LOADING */
+    /* ============================================
+       LOADING
+    ============================================ */
     #loading {
       display: none;
       text-align: center;
-      padding: 80px 40px;
+      padding: 80px 32px;
     }
 
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 2px solid #222;
-      border-top-color: #666;
+    .spinner-ring {
+      width: 48px;
+      height: 48px;
+      border: 2px solid var(--border);
+      border-top-color: var(--ciano);
+      border-right-color: rgba(0,232,212,0.35);
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 24px;
+      animation: spin 0.9s linear infinite;
+      margin: 0 auto 28px;
+      box-shadow: var(--shadow-glow);
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-label {
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .loading-sub {
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-bottom: 32px;
+    }
 
     .loading-steps {
       list-style: none;
       text-align: left;
       display: inline-block;
-      margin-top: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 28px;
+      min-width: 300px;
     }
 
     .loading-steps li {
+      font-family: var(--font-body);
       font-size: 13px;
-      color: #444;
-      padding: 4px 0;
-      transition: color 0.4s;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding: 6px 0;
+      transition: color 400ms var(--ease);
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
-    .loading-steps li.active { color: #aaa; }
-    .loading-steps li.done { color: #666; }
-    .loading-steps li::before { content: '○ '; }
-    .loading-steps li.active::before { content: '◉ '; color: #888; }
-    .loading-steps li.done::before { content: '● '; color: #555; }
+    .loading-steps li::before { content: '○'; font-size: 9px; min-width: 12px; text-align: center; }
 
-    /* RESULT */
+    .loading-steps li.active { color: var(--ciano); }
+    .loading-steps li.active::before { content: '◉'; color: var(--ciano); text-shadow: 0 0 8px var(--ciano); }
+    .loading-steps li.done { color: var(--text-muted); }
+    .loading-steps li.done::before { content: '●'; color: var(--ciano); opacity: 0.4; }
+
+    /* ============================================
+       RESULT
+    ============================================ */
     #result { display: none; }
 
     .result-header {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
+      gap: 16px;
       margin-bottom: 32px;
     }
 
     .result-header h2 {
-      font-size: 20px;
+      font-family: var(--font-display);
+      font-size: 24px;
       font-weight: 700;
-      color: #fff;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      margin-bottom: 4px;
     }
 
-    .result-header p { font-size: 13px; color: #555; margin-top: 2px; }
-
-    .btn-notion {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      color: #aaa;
-      padding: 10px 18px;
-      border-radius: 8px;
+    .result-sub {
       font-size: 13px;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.2s;
-      white-space: nowrap;
+      color: var(--text-muted);
+      font-weight: 500;
     }
 
-    .btn-notion:hover { border-color: #444; color: #fff; }
-
+    /* Grid */
     .card-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 16px;
+      gap: 10px;
+      margin-bottom: 10px;
     }
 
-    @media (max-width: 540px) { .card-grid { grid-template-columns: 1fr; } }
+    .card-grid .full { grid-column: 1 / -1; }
 
+    /* Cards */
     .result-card {
-      background: #141414;
-      border: 1px solid #1e1e1e;
-      border-radius: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
       padding: 20px;
+      transition: border-color 200ms var(--ease);
     }
 
-    .result-card.full { grid-column: 1 / -1; }
+    .result-card:hover { border-color: var(--border-strong); }
 
-    .result-card .card-label {
+    .card-label {
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ciano);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0.8;
+    }
+
+    .card-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--ciano-border);
+    }
+
+    .card-value {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.7;
+    }
+
+    .card-value.muted {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* Pain */
+    .pain-levels { display: flex; flex-direction: column; gap: 10px; }
+
+    .pain-item {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid;
+    }
+
+    .pain-item.superficial {
+      background: rgba(0,232,212,0.03);
+      border-color: rgba(0,232,212,0.12);
+    }
+
+    .pain-item.real {
+      background: rgba(0,232,212,0.06);
+      border-color: rgba(0,232,212,0.18);
+    }
+
+    .pain-item.profunda {
+      background: rgba(0,232,212,0.10);
+      border-color: rgba(0,232,212,0.28);
+    }
+
+    .pain-label {
       font-size: 10px;
       font-weight: 700;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: #444;
-      margin-bottom: 10px;
+      color: var(--ciano);
+      margin-bottom: 6px;
+      opacity: 0.65;
     }
 
-    .result-card .card-value {
-      font-size: 14px;
-      color: #ccc;
+    .pain-item.profunda .pain-label { opacity: 1; }
+
+    .pain-text {
+      font-size: 13px;
+      color: var(--text-primary);
       line-height: 1.6;
     }
 
-    .pain-levels { display: flex; flex-direction: column; gap: 12px; }
-
-    .pain-item { }
-
-    .pain-item .pain-label {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-
-    .pain-item.superficial .pain-label { color: #664444; }
-    .pain-item.real .pain-label { color: #664422; }
-    .pain-item.profunda .pain-label { color: #883333; }
-
-    .pain-item .pain-text {
-      font-size: 13px;
-      color: #bbb;
-      line-height: 1.5;
-    }
-
+    /* Badges */
     .badge-nivel {
       display: inline-block;
       padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
       font-weight: 700;
+      font-family: var(--font-body);
       letter-spacing: 0.5px;
+      border: 1px solid;
     }
 
-    .nivel-1 { background: #1a1a1a; color: #666; border: 1px solid #2a2a2a; }
-    .nivel-2 { background: #1a1a0a; color: #887733; border: 1px solid #333300; }
-    .nivel-3 { background: #0a1a0a; color: #448844; border: 1px solid #003300; }
-    .nivel-4 { background: #0a0a1a; color: #4466aa; border: 1px solid #001144; }
-    .nivel-5 { background: #1a0a0a; color: #aa4444; border: 1px solid #440000; }
+    .nivel-1 { background: rgba(100,116,139,.12); color: #94A3B8; border-color: rgba(100,116,139,.3); }
+    .nivel-2 { background: rgba(251,191,36,.1);   color: #FBBF24; border-color: rgba(251,191,36,.3); }
+    .nivel-3 { background: rgba(0,232,212,.1);    color: #00E8D4; border-color: rgba(0,232,212,.3); }
+    .nivel-4 { background: rgba(96,165,250,.1);   color: #60A5FA; border-color: rgba(96,165,250,.3); }
+    .nivel-5 { background: rgba(239,68,68,.1);    color: #ef4444; border-color: rgba(239,68,68,.3); }
 
     .framework-badge {
       display: inline-block;
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      color: #aaa;
-      padding: 6px 14px;
-      border-radius: 6px;
+      background: var(--ciano-muted);
+      border: 1px solid var(--ciano-border);
+      color: var(--ciano);
+      padding: 5px 14px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-display);
       font-size: 13px;
       font-weight: 600;
-      margin-bottom: 8px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
     }
 
-    .angulos { display: flex; flex-direction: column; gap: 16px; }
+    /* Ângulos */
+    .angulos { display: flex; flex-direction: column; gap: 10px; }
 
     .angulo-item {
       padding: 16px;
-      background: #0f0f0f;
-      border: 1px solid #1e1e1e;
-      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--ciano-border);
+      border-radius: var(--radius-md);
+      transition: border-left-color 200ms var(--ease);
     }
 
-    .angulo-item .angulo-framework {
+    .angulo-item:hover { border-left-color: var(--ciano); }
+
+    .angulo-framework {
       font-size: 10px;
       font-weight: 700;
-      letter-spacing: 1px;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: #555;
+      color: var(--ciano);
+      opacity: 0.75;
       margin-bottom: 8px;
     }
 
-    .angulo-item .angulo-texto {
+    .angulo-texto {
       font-size: 14px;
-      color: #ccc;
-      line-height: 1.6;
+      color: var(--text-primary);
+      line-height: 1.7;
       font-style: italic;
     }
 
+    /* Avatar card */
     .avatar-card-text {
       font-size: 14px;
-      color: #bbb;
-      line-height: 1.8;
+      color: var(--text-secondary);
+      line-height: 1.9;
       white-space: pre-wrap;
     }
 
+    /* Actions */
     .result-actions {
       display: flex;
       gap: 12px;
-      margin-top: 32px;
+      margin-top: 28px;
     }
 
-    .btn-reset {
-      flex: 1;
-      background: transparent;
-      border: 1px solid #2a2a2a;
-      color: #666;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      padding: 14px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.2s;
-    }
+    .result-actions .btn-ghost { flex: 1; }
+    .result-actions .btn-accent-outline { flex: 1; justify-content: center; }
 
-    .btn-reset:hover { border-color: #444; color: #aaa; }
-
-    .error-msg {
-      background: #1a0a0a;
-      border: 1px solid #440000;
-      border-radius: 10px;
-      padding: 16px 20px;
-      color: #cc5555;
-      font-size: 13px;
-      margin-top: 16px;
-      display: none;
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (max-width: 560px) {
+      .card-grid { grid-template-columns: 1fr; }
+      .form-card { padding: 28px 20px; }
+      .result-header { flex-direction: column; }
     }
   </style>
 </head>
 <body>
   <div class="container">
 
-    <header>
-      <div class="badge">O Parasita • 5 Camadas</div>
-      <h1>Avatar Intelligence Engine</h1>
-      <p>Mapeamento profundo de avatar usando a metodologia do interrogatório Parasita.<br>Diagnóstico de nível de consciência + framework + 3 ângulos prontos.</p>
+    <!-- HEADER -->
+    <header class="page-header">
+      <div class="badge-eyebrow">O Parasita · 5 Camadas</div>
+      <h1>Avatar <span>Intelligence</span> Engine</h1>
+      <p>Mapeamento profundo de avatar usando a metodologia do interrogatório Parasita. Diagnóstico de nível de consciência + framework + 3 ângulos prontos.</p>
     </header>
 
     <!-- FORMULÁRIO -->
     <div id="form-section">
       <div class="form-card">
+
         <div class="form-group">
-          <label>Nome do cliente <span class="req">*</span></label>
+          <label class="label-field">Nome do cliente <span class="req">*</span></label>
           <input type="text" id="nome_cliente" placeholder="Ex: João Silva" autocomplete="off">
         </div>
 
         <div class="form-group">
-          <label>Produto / serviço <span class="req">*</span></label>
+          <label class="label-field">Produto / serviço <span class="req">*</span></label>
           <input type="text" id="produto" placeholder="Ex: Curso de Cajón para iniciantes">
         </div>
 
         <div class="form-group">
-          <label>Nicho <span class="req">*</span></label>
+          <label class="label-field">Nicho <span class="req">*</span></label>
           <select id="nicho">
             <option value="" disabled selected>Selecione o nicho</option>
             <option value="infoprodutos">Infoprodutos / Cursos online</option>
@@ -428,43 +644,44 @@
         </div>
 
         <div class="form-group">
-          <label>O que o produto entrega <span class="req">*</span><span class="opt">— resultado mensurável</span></label>
+          <label class="label-field">O que o produto entrega <span class="req">*</span><span class="opt">— resultado mensurável</span></label>
           <textarea id="o_que_entrega" placeholder="Ex: O aluno aprende a tocar cajón do zero até tocar músicas completas em 30 dias"></textarea>
         </div>
 
         <hr class="divider">
 
         <div class="form-group">
-          <label>Hipótese de avatar <span class="opt">— opcional</span></label>
+          <label class="label-field">Hipótese de avatar <span class="opt">— opcional</span></label>
           <textarea id="hipotese_avatar" placeholder="Se já tem alguma ideia de quem é o avatar, descreva aqui"></textarea>
         </div>
 
         <div class="form-group">
-          <label>Já tem clientes?</label>
+          <label class="label-field">Já tem clientes?</label>
           <div class="radio-group">
-            <label><input type="radio" name="tem_clientes" value="sim"> Sim</label>
-            <label><input type="radio" name="tem_clientes" value="não" checked> Não</label>
+            <label class="radio-option"><input type="radio" name="tem_clientes" value="sim"> Sim</label>
+            <label class="radio-option"><input type="radio" name="tem_clientes" value="não" checked> Não</label>
           </div>
         </div>
 
         <div class="form-group">
-          <label>Contexto adicional <span class="opt">— opcional</span></label>
+          <label class="label-field">Contexto adicional <span class="opt">— opcional</span></label>
           <textarea id="contexto_adicional" placeholder="Qualquer informação relevante sobre o produto, mercado ou avatar"></textarea>
         </div>
 
         <div id="error-msg" class="error-msg"></div>
 
-        <button class="btn-submit" onclick="mapearAvatar()">
+        <button class="btn-primary" onclick="mapearAvatar()">
           Mapear Avatar →
         </button>
+
       </div>
     </div>
 
     <!-- LOADING -->
     <div id="loading">
-      <div class="spinner"></div>
-      <p style="color: #555; font-size: 13px; margin-bottom: 4px;">Executando interrogatório...</p>
-      <p style="color: #333; font-size: 12px;">Isso pode levar 20-40 segundos</p>
+      <div class="spinner-ring"></div>
+      <p class="loading-label">Executando interrogatório...</p>
+      <p class="loading-sub">Isso pode levar 20–40 segundos</p>
       <ul class="loading-steps" id="loading-steps">
         <li id="step-1">Camada 1 — Realidade Demográfica</li>
         <li id="step-2">Camada 2 — Mapa de Dor</li>
@@ -478,13 +695,17 @@
 
     <!-- RESULTADO -->
     <div id="result">
+
       <div class="result-header">
         <div>
           <h2>Avatar Mapeado</h2>
-          <p id="result-subtitle"></p>
+          <p class="result-sub" id="result-subtitle"></p>
         </div>
-        <a href="#" id="btn-notion" class="btn-notion" target="_blank">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 5h4M5 7.5h4M5 10h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <a href="#" id="btn-notion" class="btn-accent-outline" target="_blank">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+            <rect x="2" y="1" width="10" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M5 5h4M5 7.5h4M5 10h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
           Ver no Notion
         </a>
       </div>
@@ -517,13 +738,13 @@
       <div class="card-grid">
         <div class="result-card">
           <div class="card-label">Nível de Consciência</div>
-          <div id="nivel-badge" style="margin-bottom: 10px;"></div>
-          <div class="card-value" id="nivel-justificativa" style="font-size: 13px; color: #666;"></div>
+          <div id="nivel-badge" style="margin-bottom:10px;"></div>
+          <div class="card-value muted" id="nivel-justificativa"></div>
         </div>
         <div class="result-card">
           <div class="card-label">Framework Recomendado</div>
           <div class="framework-badge" id="framework-badge"></div>
-          <div class="card-value" id="framework-justificativa" style="font-size: 13px; color: #666;"></div>
+          <div class="card-value muted" id="framework-justificativa"></div>
         </div>
       </div>
 
@@ -540,25 +761,25 @@
       </div>
 
       <!-- Ângulos -->
-      <div class="result-card" style="margin-bottom: 16px;">
+      <div class="result-card" style="margin-bottom:10px;">
         <div class="card-label">3 Ângulos de Copy</div>
         <div class="angulos" id="angulos"></div>
       </div>
 
       <!-- Avatar Card -->
-      <div class="result-card" style="margin-bottom: 16px;">
+      <div class="result-card" style="margin-bottom:10px;">
         <div class="card-label">Avatar Card Completo</div>
         <div class="avatar-card-text" id="avatar-card"></div>
       </div>
 
       <div class="result-actions">
-        <button class="btn-reset" onclick="resetForm()">← Mapear outro avatar</button>
-        <a href="#" id="btn-notion-bottom" class="btn-notion" target="_blank" style="flex: 1; justify-content: center; text-decoration: none; display: flex; align-items: center;">
+        <button class="btn-ghost" onclick="resetForm()">← Mapear outro</button>
+        <a href="#" id="btn-notion-bottom" class="btn-accent-outline" target="_blank">
           Abrir no Notion ↗
         </a>
       </div>
-    </div>
 
+    </div>
   </div>
 
   <script>
@@ -580,22 +801,15 @@
       steps.forEach((s, i) => {
         const prev = i > 0 ? steps[i - 1] : null;
         if (prev) {
-          const t1 = setTimeout(() => {
-            document.getElementById(prev.id).className = 'done';
-          }, s.delay - 400);
+          const t1 = setTimeout(() => { document.getElementById(prev.id).className = 'done'; }, s.delay - 400);
           stepTimers.push(t1);
         }
-        const t2 = setTimeout(() => {
-          document.getElementById(s.id).className = 'active';
-        }, s.delay);
+        const t2 = setTimeout(() => { document.getElementById(s.id).className = 'active'; }, s.delay);
         stepTimers.push(t2);
       });
     }
 
-    function clearLoadingSteps() {
-      stepTimers.forEach(t => clearTimeout(t));
-      stepTimers = [];
-    }
+    function clearLoadingSteps() { stepTimers.forEach(t => clearTimeout(t)); stepTimers = []; }
 
     function showError(msg) {
       const el = document.getElementById('error-msg');
@@ -603,16 +817,14 @@
       el.style.display = 'block';
     }
 
-    function hideError() {
-      document.getElementById('error-msg').style.display = 'none';
-    }
+    function hideError() { document.getElementById('error-msg').style.display = 'none'; }
 
     async function mapearAvatar() {
       hideError();
 
-      const nome_cliente = document.getElementById('nome_cliente').value.trim();
-      const produto = document.getElementById('produto').value.trim();
-      const nicho = document.getElementById('nicho').value;
+      const nome_cliente  = document.getElementById('nome_cliente').value.trim();
+      const produto       = document.getElementById('produto').value.trim();
+      const nicho         = document.getElementById('nicho').value;
       const o_que_entrega = document.getElementById('o_que_entrega').value.trim();
 
       if (!nome_cliente || !produto || !nicho || !o_que_entrega) {
@@ -620,16 +832,14 @@
         return;
       }
 
-      const tem_clientes = document.querySelector('input[name="tem_clientes"]:checked')?.value || 'não';
-      const hipotese_avatar = document.getElementById('hipotese_avatar').value.trim();
+      const tem_clientes       = document.querySelector('input[name="tem_clientes"]:checked')?.value || 'não';
+      const hipotese_avatar    = document.getElementById('hipotese_avatar').value.trim();
       const contexto_adicional = document.getElementById('contexto_adicional').value.trim();
 
-      // Mostrar loading
       document.getElementById('form-section').style.display = 'none';
       document.getElementById('loading').style.display = 'block';
       document.getElementById('result').style.display = 'none';
 
-      // Reset steps
       steps.forEach(s => { document.getElementById(s.id).className = ''; });
       document.getElementById('step-1').className = 'active';
       startLoadingSteps();
@@ -638,23 +848,15 @@
         const response = await fetch(WEBHOOK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            nome_cliente, produto, nicho, o_que_entrega,
-            hipotese_avatar, tem_clientes, contexto_adicional
-          })
+          body: JSON.stringify({ nome_cliente, produto, nicho, o_que_entrega, hipotese_avatar, tem_clientes, contexto_adicional })
         });
 
         clearLoadingSteps();
 
-        if (!response.ok) {
-          throw new Error('Erro na requisição: ' + response.status);
-        }
+        if (!response.ok) throw new Error('Erro na requisição: ' + response.status);
 
         const data = await response.json();
-
-        if (!data.success) {
-          throw new Error(data.error || 'Erro desconhecido no processamento.');
-        }
+        if (!data.success) throw new Error(data.error || 'Erro desconhecido no processamento.');
 
         renderResult(data);
 
@@ -666,23 +868,18 @@
       }
     }
 
-    function nivelClass(n) {
-      return 'nivel-' + (n >= 1 && n <= 5 ? n : 2);
-    }
+    function nivelClass(n) { return 'nivel-' + (n >= 1 && n <= 5 ? n : 2); }
 
     function renderResult(data) {
       const a = data.avatar || {};
       const notionUrl = data.notion_url || '#';
 
-      // Subtitle
       document.getElementById('result-subtitle').textContent =
         (a.cliente || '') + (a.produto ? ' — ' + a.produto : '');
 
-      // Notion links
       document.getElementById('btn-notion').href = notionUrl;
       document.getElementById('btn-notion-bottom').href = notionUrl;
 
-      // Dor
       document.getElementById('pain-levels').innerHTML = `
         <div class="pain-item superficial">
           <div class="pain-label">Superficial</div>
@@ -698,26 +895,21 @@
         </div>
       `;
 
-      // Desejo
       document.getElementById('desejo-declarado').textContent = a.desejo_declarado || '';
-      document.getElementById('desejo-real').textContent = a.desejo_real || '';
-      document.getElementById('desejo-secreto').textContent = a.desejo_secreto || '';
+      document.getElementById('desejo-real').textContent      = a.desejo_real       || '';
+      document.getElementById('desejo-secreto').textContent   = a.desejo_secreto    || '';
 
-      // Nível
       const n = parseInt(a.nivel_consciencia) || 2;
       document.getElementById('nivel-badge').innerHTML =
-        `<span class="badge-nivel ${nivelClass(n)}">${a.nome_nivel || n + '-Problem Aware'}</span>`;
+        `<span class="badge-nivel ${nivelClass(n)}">${a.nome_nivel || n + ' — Problem Aware'}</span>`;
       document.getElementById('nivel-justificativa').textContent = a.justificativa_nivel || '';
 
-      // Framework
-      document.getElementById('framework-badge').textContent = a.framework_recomendado || '';
+      document.getElementById('framework-badge').textContent         = a.framework_recomendado  || '';
       document.getElementById('framework-justificativa').textContent = a.justificativa_framework || '';
 
-      // Objeção + Crença
-      document.getElementById('objecao').textContent = a.objecao_principal || '';
-      document.getElementById('crenca').textContent = a.condicao_de_crenca || '';
+      document.getElementById('objecao').textContent = a.objecao_principal  || '';
+      document.getElementById('crenca').textContent  = a.condicao_de_crenca || '';
 
-      // Ângulos
       const angulos = [
         { nome: a.angulo_1_nome, texto: a.angulo_1_texto },
         { nome: a.angulo_2_nome, texto: a.angulo_2_texto },
@@ -731,24 +923,19 @@
         </div>
       `).join('');
 
-      // Avatar Card
       document.getElementById('avatar-card').textContent = a.avatar_card_completo || '';
 
-      // Mostrar resultado
       document.getElementById('loading').style.display = 'none';
-      document.getElementById('result').style.display = 'block';
+      document.getElementById('result').style.display  = 'block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function esc(str) {
-      return (str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+      return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
     function resetForm() {
-      document.getElementById('result').style.display = 'none';
+      document.getElementById('result').style.display       = 'none';
       document.getElementById('form-section').style.display = 'block';
       steps.forEach(s => { document.getElementById(s.id).className = ''; });
       window.scrollTo({ top: 0, behavior: 'smooth' });
